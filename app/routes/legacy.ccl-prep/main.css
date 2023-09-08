@@ -1,0 +1,267 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body, html, #root {
+	height: 100%;
+}
+
+body {
+	font-family: "Eastman Offset", -apple-system, "Microsoft Yahei UI", sans-serif;
+	font-size: 14pt;
+	outline: none;
+}
+
+p {
+	margin: 10px 0;
+}
+
+button {
+	margin: 0;
+}
+
+.hero {
+	position: relative;
+	display: grid;
+	grid-template-columns: auto 400px;
+	grid-template-areas: "description logo";
+	align-items: center;
+	padding: 0px 100px;
+	width: 100%;
+	height: calc(100% - 100px);
+	background: #f5f5f5;
+
+	transition: 500ms ease;
+}
+	.hero.collapsed {
+			grid-template-columns: 100%;
+			grid-template-areas: "logo";
+			height: 120px;
+			padding: 10px 160px;
+	}
+	.hero.collapsed .hero-image {
+			height: 100px;
+	}
+
+.hero-image {
+	grid-area: logo;
+	width: 100%;
+	height: 100%;
+	background-image: url(./assets/logo.svg);
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+
+.hero-description {
+	grid-area: description;
+	overflow: hidden;
+}
+
+.hero-em {
+	font-weight: 900;
+}
+
+.hero-title {
+	font-size: 36pt;
+}
+
+.workspace {
+	position: relative;
+	display: grid;
+	grid-template-areas: "status";
+	grid-template-rows: 100px;
+	align-items: center;
+	width: 100%;
+	height: 100px;
+	padding: 0 100px;
+	transition: 500ms ease;
+}
+	.workspace.expanded {
+			grid-template-areas: "status" "word" "control";
+			grid-template-rows: 100px auto 60px;
+			height: calc(100% - 120px);
+	}
+	.workspace.expanded .workspace-word {
+			display: block;
+	}
+	.workspace.expanded .workspace-control {
+			display: flex;
+	}
+
+.workspace-status {
+	grid-area: status;
+}
+
+.workspace-word {
+	grid-area: word;
+	display: none;
+	cursor: pointer;
+	text-align: center;
+}
+	.workspace-word p {
+			display: block;
+			position: relative;
+			
+			font-size: 36pt;
+			color: transparent;
+			background: linear-gradient(90deg, #c31432 0%,  #240b36 100%);
+			background-clip: text;
+			-webkit-background-clip: text;
+	}
+	.workspace-word p.bookmarked {
+			background: linear-gradient(90deg, #f12711 0%,  #f5af19 100%);
+			background-clip: text;
+			-webkit-background-clip: text;
+	}
+	.workspace-word p:active {
+			transform: scale(0.98)
+	}
+
+.workspace-control {
+	height: 40px;
+	grid-area: control;
+	justify-content: center;
+	display: none;
+}
+	.workspace-control p {
+			display: block;
+			user-select: none;
+			text-align: center;
+			height: 20px;
+			font-variant-numeric: tabular-nums slashed-zero;
+			line-height: 20px;
+			min-width: 100px;
+	}
+
+.control {
+	display: inline-block;
+	width: 40px;
+	height: 40px;
+	margin: 0 5px;
+	background-size: contain;
+	background-position: center center;
+	background-repeat: no-repeat;
+}
+	.control:active {
+			transform: scale(0.9);
+	}
+	.control-left {
+			background-image: url(./assets/left.svg);
+	}
+			.control-left:hover {
+					background-image: url(./assets/left-active.svg)
+			}
+	.control-right {
+			background-image: url(./assets/right.svg);
+	}
+			.control-right:hover {
+					background-image: url(./assets/right-active.svg)
+			}
+
+.button {
+	font-family: inherit;
+	min-width: 100px;
+	height: 36px;
+	font-size: inherit;
+	line-height: 36px;
+	padding: 0px 10px;
+	color: #fff;
+	text-shadow: 0px 1px #000;
+	border: none;
+	background: #888;
+	box-shadow: 5px 5px 0px #555;
+	outline: none;
+	border-radius: 0;
+	-webkit-appearance: none;
+
+	transition: 100ms ease;
+}
+	.button:active {
+			transform: translateX(3px) translateY(3px);
+			box-shadow: 0px 0px 0px #555;
+	}
+
+/* The container */
+.checkbox {
+	display: inline-block;
+	position: relative;
+	padding-left: 32px;
+	margin-left: 10px;
+	cursor: pointer;
+}
+
+/* Hide the browser's default checkbox */
+.checkbox input {
+	position: absolute;
+	opacity: 0;
+	cursor: pointer;
+	height: 0;
+	width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 26px;
+	width: 26px;
+	background-color: #888;
+}
+
+/* When the checkbox is checked, add a blue background */
+.checkbox input.checked ~ .checkmark {
+	background-color: #555;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+	content: "";
+	opacity: 0;
+}
+
+/* Show the checkmark when checked */
+.checkbox input.checked ~ .checkmark:after {
+	opacity: 1;
+}
+
+/* Style the checkmark/indicator */
+.checkbox .checkmark:after {
+	position: absolute;
+	display: block;
+	left: 9px;
+	top: 6px;
+	width: 5px;
+	height: 10px;
+	border: solid white;
+	border-width: 0 2px 2px 0;
+	-webkit-transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	transform: rotate(45deg);
+}
+
+@media only screen and (max-width: 1000px), (max-height: 600px)  {
+	.hero {
+			height: auto;
+			grid-template-columns: 100%;
+			grid-template-areas: "logo" "description";
+			grid-template-rows: 100px auto;
+			padding: 10px 40px 40px 40px;
+	}
+	.hero.collapsed {
+			grid-template-rows: 100px 0;
+			padding: 10px 40px;
+	}
+	.hero-image {
+			height: 100px !important;
+	}
+	.workspace {
+			padding: 0 40px;
+	}
+	.workspace-word p {
+			font-size: 24pt;
+	}
+}
