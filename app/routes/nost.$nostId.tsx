@@ -2,8 +2,9 @@ import type { ActionFunction, LinksFunction, LoaderArgs, V2_MetaFunction } from 
 import { json, redirect } from "@remix-run/node"
 import { useLoaderData } from "@remix-run/react"
 import * as cheerio from "cheerio"
-import { useEffect, useRef, type FormEventHandler } from "react"
-import { Subject, debounceTime, distinct, from, switchMap, tap } from "rxjs"
+import { useEffect, useRef } from "react"
+import { debounceTime, distinct, filter, fromEvent, map, switchMap, tap } from "rxjs"
+import { fromFetch } from "rxjs/fetch"
 import LoadingToast from "~/components/loading-toast"
 import { nostIdCookie } from "~/cookies.server"
 import { db } from "~/lib/firebase.server"
@@ -12,7 +13,6 @@ import nostStyles from "~/styles/nost.css"
 
 export const loader = async (args: LoaderArgs) => {
 	const nostId = args.params.nostId
-
 	if (!nostId) {
 		return redirect("/nost")
 	}
@@ -66,24 +66,27 @@ export const meta: V2_MetaFunction<typeof loader> = ({ data }) => ([
 
 export default function NostPage() {
 	const { content, nostId } = useLoaderData<typeof loader>()
-	const contentSubjectRef = useRef(new Subject<string>())
+	const editorRef = useRef<HTMLDivElement>(null)
 	const bc = useRef(new BroadcastChannel("loading_sources"))
 
 	useEffect(() => {
-		const sub = contentSubjectRef.current
+		const sub = fromEvent<InputEvent>(editorRef.current!, "input")
 			.pipe(
 				debounceTime(500),
 				distinct(),
+				filter(event => event.target !== null),
+				map(event => event.target as HTMLDivElement),
+				map(target => target.innerHTML),
 				tap(() => {
 					bc.current.postMessage({ resource: nostId, loading: true })
 				}),
 				switchMap(content => {
 					const form = new FormData()
 					form.set("content", content)
-					return from(fetch(`/nost/${nostId}`, {
+					return fromFetch(`/nost/${nostId}`, {
 						method: "POST",
 						body: form,
-					}))
+					})
 				}),
 				tap(res => {
 					if (res.ok) {
@@ -96,18 +99,15 @@ export default function NostPage() {
 		return () => sub.unsubscribe()
 	}, [nostId])
 
-	const handleOnInput: FormEventHandler<HTMLDivElement> = e => {
-		contentSubjectRef.current.next(e.currentTarget.innerHTML)
-	}
 	return <>
-		<LoadingToast />
 		<div
-			className="p-4 max-w-[850px] rounded focus:outline-none mx-auto bg-white border border-solid border-slate-200 my-4 min-h-[calc(100vh-2rem)]"
+			ref={editorRef}
+			className="p-4 w-[calc(100%-2rem)] max-w-[850px] rounded focus:outline-none mx-auto bg-white border border-solid border-slate-200 my-4 min-h-[calc(100vh-2rem)]"
 			contentEditable
 			dangerouslySetInnerHTML={{
 				__html: content
 			}}
-			onInput={handleOnInput}
 		/>
+		<LoadingToast />
 	</>
 }
