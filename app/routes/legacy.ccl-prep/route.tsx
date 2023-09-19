@@ -1,12 +1,12 @@
 // @ts-nocheck
 // This app will no longer receive updates unless it breaks Remix build
 
-import type { LinksFunction, V2_MetaFunction } from "@remix-run/node"
+import type { LinksFunction, MetaFunction } from "@remix-run/node"
 import { useEffect, useRef, useState } from "react"
 import styles from "./main.css"
 import vocab from "./vocab.json"
 
-export const meta: V2_MetaFunction = () => {
+export const meta: MetaFunction = () => {
   return [
     { title: "Stastro | CCL Prep" },
     { name: "description", content: "Legacy app for Chinese CCL test takers." },

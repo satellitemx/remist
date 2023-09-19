@@ -1,5 +1,5 @@
 import { cssBundleHref } from "@remix-run/css-bundle"
-import type { LinksFunction, V2_MetaFunction } from "@remix-run/node"
+import type { LinksFunction, MetaFunction } from "@remix-run/node"
 import {
 	Links,
 	LiveReload,
@@ -10,7 +10,7 @@ import {
 } from "@remix-run/react"
 import tailwindStyles from "~/styles/tailwind.css"
 
-export const meta: V2_MetaFunction = () => {
+export const meta: MetaFunction = () => {
   return [
     { title: "Stastro" },
     { name: "description", content: "Personal site." },
