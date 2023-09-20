@@ -1,9 +1,9 @@
-import type { ActionFunction, LinksFunction, LoaderArgs, V2_MetaFunction } from "@remix-run/node"
+import type { ActionFunction, LinksFunction, LoaderFunctionArgs, MetaFunction } from "@remix-run/node"
 import { json, redirect } from "@remix-run/node"
 import { useLoaderData } from "@remix-run/react"
 import * as cheerio from "cheerio"
 import { useEffect, useRef } from "react"
-import { debounceTime, distinct, filter, fromEvent, map, switchMap, tap } from "rxjs"
+import { concatMap, debounceTime, distinct, filter, fromEvent, map, tap } from "rxjs"
 import { fromFetch } from "rxjs/fetch"
 import LoadingToast from "~/components/loading-toast"
 import { nostIdCookie } from "~/cookies.server"
@@ -11,7 +11,7 @@ import { db } from "~/lib/firebase.server"
 import type { NostDoc } from "~/models/nost.server"
 import nostStyles from "~/styles/nost.css"
 
-export const loader = async (args: LoaderArgs) => {
+export const loader = async (args: LoaderFunctionArgs) => {
 	const nostId = args.params.nostId
 	if (!nostId) {
 		return redirect("/nost")
@@ -59,7 +59,7 @@ export const links: LinksFunction = () => ([
 	{ rel: "stylesheet", href: nostStyles }
 ])
 
-export const meta: V2_MetaFunction<typeof loader> = ({ data }) => ([
+export const meta: MetaFunction<typeof loader> = ({ data }) => ([
 	{ title: `${data?.nostId} Nost` },
 	{ name: "description", content: data?.description }
 ])
@@ -80,10 +80,10 @@ export default function NostPage() {
 				tap(() => {
 					bc.current.postMessage({ resource: nostId, loading: true })
 				}),
-				switchMap(content => {
+				concatMap(content => {
 					const form = new FormData()
 					form.set("content", content)
-					return fromFetch(`/nost/${nostId}`, {
+					return fromFetch(window.location.href, {
 						method: "POST",
 						body: form,
 					})
